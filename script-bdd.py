@@ -69,6 +69,8 @@ try:
         )
     #a completer
 
+    curs.execute('''GRANT SELECT, INSERT, UPDATE, DELETE ON topspot TO PUBLIC''')
+
     # Commandes pour les questions de la SAE
     # test=pd.read_sql('''
     #     select
