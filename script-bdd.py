@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 co=None
 
 # Lis la BDD
-data=pd.read_csv(r'top10s.csv', encoding='latin-1')
+data=pd.read_csv(r'top10s.csv', encoding='UTF-8')
 df=pd.DataFrame(data)
 # Nettoie les données
 df=df.drop_duplicates()
@@ -22,7 +22,7 @@ try:
     # Connecte à la base
     co=psy.connect(
         host='berlin',
-        database='dbviastolfi',
+        database='dbsaeafjv',
         user=gp.getuser(),
         password=gp.getpass('Password: ')
     )
@@ -41,10 +41,10 @@ try:
 
     curs.execute('''
         CREATE TABLE TopSpot(
-            title varchar(100),
+            title varchar(400),
             artist varchar(100),
             genre varchar(100),
-            year_release numeric,
+            year numeric,
             bpm numeric,
             nrgy numeric,
             dnce numeric,
@@ -55,7 +55,7 @@ try:
             acous numeric,
             spch numeric,
             pop numeric,
-            PRIMARY KEY (title, artist, genre)
+            PRIMARY KEY (title, artist, genre, year, pop)
         );'''
     )
     #a completer
@@ -63,9 +63,9 @@ try:
     # Insertion des valeurs
     for row in df.itertuples():
         curs.execute('''
-            INSERT INTO TopSpot (title, artist, genre, year_release, bpm, nrgy, dnce, dB, live, val, dur, acous, spch, pop) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);''',
-                (row.title, row.artist, row.top_genre, row.year, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch, row.pop) 
+            INSERT INTO TopSpot (title, artist, genre, year, bpm, nrgy, dnce, dB, live, val, dur, acous, spch, pop) 
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);''',
+                (row.title, row.artist, 'row.top genre', row.year, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch, row.pop) 
         )
     #a completer
 
