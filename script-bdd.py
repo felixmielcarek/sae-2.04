@@ -11,23 +11,21 @@ import matplotlib.pyplot as plt
 
 co=None
 
+# Lis la BDD
+data=pd.read_csv(r'top10s.csv', encoding='latin-1')
+df=pd.DataFrame(data)
+# Nettoie les données
+df=df.drop_duplicates()
+
 # Code dans le try est executé
 try:
     # Connecte à la base
     co=psy.connect(
         host='berlin',
-        database='dbsaeafjv',
+        database='dbviastolfi',
         user=gp.getuser(),
         password=gp.getpass('Password: ')
     )
-
-    # Lis la BDD
-    data=pd.read_csv(r'top10s.csv')
-    df=pd.DataFrame(data)
-
-    # Nettoie les données
-    df=df.drop_duplicates()
-    #a completer
 
     # Affiche les données
     print('\n')
@@ -38,26 +36,39 @@ try:
     curs=co.cursor()
 
     # Création de la table
-    # curs.execute('''DROP TABLE IF EXISTS TopSpot;''')
-    # curs.execute('''
-    #     CREATE TABLE TopSpot(
-            
-    #     );'''
-    # )
+    curs.execute('''DROP TABLE IF EXISTS TopSpot;''')
+
+
+    curs.execute('''
+        CREATE TABLE TopSpot(
+            title varchar(100),
+            artist varchar(100),
+            genre varchar(100),
+            year_release numeric,
+            bpm numeric,
+            nrgy numeric,
+            dnce numeric,
+            dB smallint,
+            live numeric,
+            val numeric,
+            dur numeric,
+            acous numeric,
+            spch numeric,
+            pop numeric,
+            PRIMARY KEY (title, artist, genre)
+        );'''
+    )
     #a completer
 
     # Insertion des valeurs
-    # for row in df.itertuples():
-    #     curs.execute('''
-    #         INSERT INTO TopSpot 
-    #         VALUES ();'''
-    #             ,() 
-    #     )
+    for row in df.itertuples():
+        curs.execute('''
+            INSERT INTO TopSpot (title, artist, genre, year_release, bpm, nrgy, dnce, dB, live, val, dur, acous, spch, pop) 
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);''',
+                (row.title, row.artist, row.top_genre, row.year, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch, row.pop) 
+        )
     #a completer
 
-    # Récupération de la BDD màj
-    df2=pd.read_sql('''SELECT * FROM topspot;''',con=co)
-  
     # Commandes pour les questions de la SAE
     # test=pd.read_sql('''
     #     select
@@ -66,6 +77,11 @@ try:
     #     ''',con=co
     # )
     #a completer
+    curs.execute('''SELECT count(*) FROM TopSpot''')
+    res=curs.fetchall()
+    print(res)
+
+    df2=pd.read_sql('''SELECT * FROM topspot;''',con=co)
 
     # Fermeture du curseur
     co.commit()
