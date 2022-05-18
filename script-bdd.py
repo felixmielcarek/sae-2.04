@@ -7,7 +7,6 @@ import psycopg2 as psy
 import getpass as gp
 # Pour script
 import pandas as pd
-import matplotlib.pyplot as plt
 
 co=None
 
@@ -136,10 +135,6 @@ try:
     print(res)
 
     df2=pd.read_sql('''SELECT * FROM topspot;''',con=co)
-
-    curs.execute('''DROP TABLE IF EXISTS Artiste CASCADE''')
-    curs.execute('''DROP TABLE IF EXISTS Musique CASCADE''')
-    curs.execute('''DROP TABLE IF EXISTS TopSpot CASCADE''')
 
     # Fermeture du curseur
     co.commit()
