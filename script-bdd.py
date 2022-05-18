@@ -8,6 +8,8 @@ import getpass as gp
 # Pour script
 import pandas as pd
 
+### MODIFIER LE CSV --- TOP GENRE
+
 co=None
 
 # Lis la BDD
@@ -68,7 +70,7 @@ try:
         CREATE TABLE TopSpot(
             IdArtiste numeric REFERENCES artiste(id),
             idMusique numeric REFERENCES musique(id),
-            year numeric,
+            year numeric(4),
             pop numeric,
             PRIMARY KEY (idArtiste, idMusique, year, pop)
         );'''
@@ -90,7 +92,7 @@ try:
         curs.execute('''
             INSERT INTO Musique(id, title, genre, bpm, nrgy, dnce, dB, live, val, dur, acous, spch)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
-                (j, row.title, 'row.top genre', row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch)
+                (j, row.title, row.topgenre, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch)
         )
         j += 1
 
