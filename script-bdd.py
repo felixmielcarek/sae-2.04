@@ -36,15 +36,22 @@ try:
     curs=co.cursor()
 
     # Création de la table
-    curs.execute('''DROP TABLE IF EXISTS TopSpot;''')
-
+    curs.execute('''DROP TABLE IF EXISTS Artiste CASCADE''')
+    curs.execute('''DROP TABLE IF EXISTS Musique CASCADE''')
+    curs.execute('''DROP TABLE IF EXISTS TopSpot CASCADE''')
 
     curs.execute('''
-        CREATE TABLE TopSpot(
+        CREATE TABLE Artiste(
+            id numeric PRIMARY KEY,
+            artist varchar(100)
+        );'''
+    )
+
+    curs.execute('''
+        CREATE TABLE Musique(
+            id numeric PRIMARY KEY,
             title varchar(400),
-            artist varchar(100),
             genre varchar(100),
-            year numeric,
             bpm numeric,
             nrgy numeric,
             dnce numeric,
@@ -53,20 +60,50 @@ try:
             val numeric,
             dur numeric,
             acous numeric,
-            spch numeric,
+            spch numeric
+        );'''
+    )
+
+
+    curs.execute('''
+        CREATE TABLE TopSpot(
+            IdArtiste numeric REFERENCES artiste(id),
+            idMusique numeric REFERENCES musique(id),
+            year numeric,
             pop numeric,
-            PRIMARY KEY (title, artist, genre, year, pop)
+            PRIMARY KEY (idArtiste, idMusique, year, pop)
         );'''
     )
     #a completer
 
     # Insertion des valeurs
+    i = 1
     for row in df.itertuples():
         curs.execute('''
-            INSERT INTO TopSpot (title, artist, genre, year, bpm, nrgy, dnce, dB, live, val, dur, acous, spch, pop) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);''',
-                (row.title, row.artist, 'row.top genre', row.year, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch, row.pop) 
+            INSERT INTO Artiste(id, artist) 
+            VALUES (%s,%s);''',
+                (i, row.artist,) 
         )
+        i += 1
+
+    j = 1
+    for row in df.itertuples():
+        curs.execute('''
+            INSERT INTO Musique(id, title, genre, bpm, nrgy, dnce, dB, live, val, dur, acous, spch)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+                (j, row.title, 'row.top genre', row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch)
+        )
+        j += 1
+
+    k = 1
+    for row in df.itertuples():
+        curs.execute('''
+            INSERT INTO topSpot (idArtiste, idMusique, year, pop)
+            VALUES (%s,%s,%s,%s)''',
+            (k, k, row.year, row.pop)
+        )
+        k += 1
+    
     #a completer
 
     curs.execute('''GRANT SELECT, INSERT, UPDATE, DELETE ON topspot TO PUBLIC''')
@@ -79,7 +116,22 @@ try:
     #     ''',con=co
     # )
     #a completer
-    curs.execute('''SELECT count(*) FROM TopSpot''')
+    curs.execute('''SELECT count(*) FROM Artiste''')
+    res=curs.fetchall()
+    print(res)
+
+    curs.execute('''SELECT count(*) FROM Musique''')
+    res=curs.fetchall()
+    print(res)
+
+    curs.execute('''SELECT count(*) FROM topSpot''')
+    res=curs.fetchall()
+    print(res)
+
+    curs.execute('''SELECT a.id AS Id_Artiste, a.artist, m.id AS Id_Musique, m.title, t.idArtiste AS id_Art_Top, t.idMusique AS id_Mus_Top
+                    FROM Artiste a, Musique m, topSpot t
+                    WHERE a.id=1 AND m.id=1 AND t.idArtiste=a.id AND t.idMusique=m.id;    
+                ''')
     res=curs.fetchall()
     print(res)
 
