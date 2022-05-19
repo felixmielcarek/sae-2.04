@@ -44,24 +44,24 @@ try:
     curs.execute('''
         CREATE TABLE Artiste(
             id char(4) PRIMARY KEY,
-            artist varchar(100)
+            nom varchar(100)
         );'''
     )
 
     curs.execute('''
         CREATE TABLE Musique(
             id char(4) PRIMARY KEY,
-            title varchar(400),
+            titre varchar(400),
             genre varchar(100),
             bpm numeric,
-            nrgy numeric,
-            dnce numeric,
+            energie numeric,
+            danse numeric,
             dB smallint,
             live numeric,
-            val numeric,
-            dur numeric,
-            acous numeric,
-            spch numeric
+            ambiance numeric,
+            duree numeric,
+            acoustique numeric,
+            texte numeric
         );'''
     )
 
@@ -70,9 +70,9 @@ try:
         CREATE TABLE TopSpot(
             IdArtiste char(4) REFERENCES artiste(id),
             idMusique char(4) REFERENCES musique(id),
-            year numeric(4),
-            pop numeric,
-            PRIMARY KEY (idArtiste, idMusique, year, pop)
+            annee numeric(4),
+            popularite numeric,
+            PRIMARY KEY (idArtiste, idMusique, annee, popularite)
         );'''
     )
     #a completer
@@ -87,7 +87,7 @@ try:
             A = 'A'
         idArt = A+str(i)
         curs.execute('''
-            INSERT INTO Artiste(id, artist) 
+            INSERT INTO Artiste(id, nom) 
             VALUES (%s,%s);''',
                 (idArt, row.artist,) 
         )
@@ -103,7 +103,7 @@ try:
 
         idMus = M+str(j)
         curs.execute('''
-            INSERT INTO Musique(id, title, genre, bpm, nrgy, dnce, dB, live, val, dur, acous, spch)
+            INSERT INTO Musique(id, titre, genre, bpm, energie, danse, dB, live, ambiance, duree, acoustique, texte)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
                 (idMus, row.title, row.topgenre, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch)
         )
@@ -122,7 +122,7 @@ try:
         idMus = M+str(k)
         idArt = A+str(k)
         curs.execute('''
-            INSERT INTO topSpot (idArtiste, idMusique, year, pop)
+            INSERT INTO topSpot (idArtiste, idMusique, annee, popularite)
             VALUES (%s,%s,%s,%s)''',
             (idArt, idMus, row.year, row.pop)
         )
