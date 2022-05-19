@@ -39,7 +39,7 @@ try:
 
     fig2=datafr2.plot(x='genre',y='sumdnce', legend=False)
     fig2.set_xticks(datafr2.index)
-    fig2.set_xticklabels(datafr2['genre'], rotation=65, fontsize=10)
+    fig2.set_xticklabels(datafr2['genre'], rotation=0, fontsize=10)
     fig2.set_xlabel('Genre')
     fig2.set_ylabel('Somme dansabilté')
     plt.show()
@@ -132,19 +132,48 @@ try:
 
 # requête numero 8 : (prochainement)
 
-    """ datafr8 = pd.read_sql('''
-                            
+    """datafr8 = pd.read_sql('''
+                            SELECT a.nom, count(m.*) AS nbMusPopDance
+                            FROM Artiste a, TopSpot t, Musique m
+                            WHERE a.Id=t.IdArtiste AND m.Id=t.IdMusique AND m.genre='dance pop'
+                            GROUP BY a.nom
+                            ORDER BY count(m.*)
                         ''', con=co)
     datafr88=datafr8.transpose()
     print(datafr88)
     fig8=datafr88.plot(y=0 ,kind='pie',autopct='%1.0f%%')
-    plt.show() """
+    plt.show()"""
 
-# requête numero 9 : (speechless)
+# requête numero 9 : (texte dans les musiques par années)
+
+    datafr9 = pd.read_sql('''
+                            SELECT t.annee, (sum(m.texte)/count(m.texte)) AS txtmoy
+                            FROM Musique m, TopSpot t
+                            WHERE t.IdMusique=m.Id
+                            GROUP BY t.annee
+                            ORDER BY annee ASC;
+                        ''', con=co)
+
+    fig9=datafr9.plot(x='annee',y='txtmoy', kind='bar', legend=False)
+    fig9.set_xticklabels(datafr9['annee'], rotation=0,fontsize=10) 
+    fig9.set_xlabel('Années : ')
+    fig9.set_ylabel('Niveau de texte moyen des musiques:(sur 50)')
+    plt.show()
 
 
+# requête numero 10 : (repartition des 5 styles les plus populaire en fonction de leur capacité a etre fait en live)
 
-
+    datafr10 = pd.read_sql('''
+                            SELECT sum(m1.live)/count(m1.live) as livedancepop, sum(m2.live)/count(m2.live) AS livepop, sum(m3.live)/count(m3.live) AS livecanadianpop, sum(m4.live)/count(m4.live) as liveboyband, sum(m5.live)/count(m5.live) as livebarbadianpop
+                            FROM Musique m1, Musique m2, Musique m3, Musique m4, Musique m5
+                            WHERE m1.genre='dance pop' AND m2.genre='pop' AND m3.genre='canadian pop' AND m4.genre='boy band' AND m5.genre='barbadian pop';
+                        ''', con=co)
+    datafr100=datafr10.transpose()
+    print(datafr100)
+    fig10=datafr100.plot(y=0 ,kind='pie',autopct='%1.0f%%')
+    fig.legend(['livedancepop','livePop','liveCanadaPop','liveBoyBand','liveBarbadianPop'])
+    fig.set_ylabel('')
+    plt.show()
 
 except (Exception, psy.DatabaseError) as error:
     print(error)
