@@ -43,14 +43,14 @@ try:
 
     curs.execute('''
         CREATE TABLE Artiste(
-            id numeric PRIMARY KEY,
+            id char(4) PRIMARY KEY,
             artist varchar(100)
         );'''
     )
 
     curs.execute('''
         CREATE TABLE Musique(
-            id numeric PRIMARY KEY,
+            id char(4) PRIMARY KEY,
             title varchar(400),
             genre varchar(100),
             bpm numeric,
@@ -68,8 +68,8 @@ try:
 
     curs.execute('''
         CREATE TABLE TopSpot(
-            IdArtiste numeric REFERENCES artiste(id),
-            idMusique numeric REFERENCES musique(id),
+            IdArtiste char(4) REFERENCES artiste(id),
+            idMusique char(4) REFERENCES musique(id),
             year numeric(4),
             pop numeric,
             PRIMARY KEY (idArtiste, idMusique, year, pop)
@@ -78,30 +78,53 @@ try:
     #a completer
 
     # Insertion des valeurs
+    A = 'A00'
     i = 1
     for row in df.itertuples():
+        if i > 9:
+            A = 'A0'
+        if i > 99:
+            A = 'A'
+        idArt = A+str(i)
         curs.execute('''
             INSERT INTO Artiste(id, artist) 
             VALUES (%s,%s);''',
-                (i, row.artist,) 
+                (idArt, row.artist,) 
         )
         i += 1
 
+    M = 'M00'
     j = 1
     for row in df.itertuples():
+        if j > 9:
+            M = 'M0'
+        if j > 99:
+            M = 'M'
+
+        idMus = M+str(j)
         curs.execute('''
             INSERT INTO Musique(id, title, genre, bpm, nrgy, dnce, dB, live, val, dur, acous, spch)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
-                (j, row.title, row.topgenre, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch)
+                (idMus, row.title, row.topgenre, row.bpm, row.nrgy, row.dnce, row.dB, row.live, row.val, row.dur, row.acous, row.spch)
         )
         j += 1
 
+    M = 'M00'
+    A = 'A00'
     k = 1
     for row in df.itertuples():
+        if k > 9:
+            M = 'M0'
+            A = 'A0'
+        if k > 99:
+            M = 'M'
+            A = 'A'
+        idMus = M+str(k)
+        idArt = A+str(k)
         curs.execute('''
             INSERT INTO topSpot (idArtiste, idMusique, year, pop)
             VALUES (%s,%s,%s,%s)''',
-            (k, k, row.year, row.pop)
+            (idArt, idMus, row.year, row.pop)
         )
         k += 1
     
@@ -126,13 +149,6 @@ try:
     print(res)
 
     curs.execute('''SELECT count(*) FROM topSpot''')
-    res=curs.fetchall()
-    print(res)
-
-    curs.execute('''SELECT a.id AS Id_Artiste, a.artist, m.id AS Id_Musique, m.title, t.idArtiste AS id_Art_Top, t.idMusique AS id_Mus_Top
-                    FROM Artiste a, Musique m, topSpot t
-                    WHERE a.id=1 AND m.id=1 AND t.idArtiste=a.id AND t.idMusique=m.id;    
-                ''')
     res=curs.fetchall()
     print(res)
 

@@ -96,6 +96,52 @@ try:
     fig5.set_ylabel('Temps moyen des musiques:(en min)')
     plt.show()
 
+# requête numero 6 : (classe les artistes par popularité meilleur)
+
+    datafr6 = pd.read_sql('''
+                            SELECT a.artist, t.pop
+                            FROM Artiste a, TopSpot t
+                            WHERE a.Id=t.IdArtiste
+                            GROUP BY a.artist, t.pop
+                            ORDER BY t.pop DESC
+                            FETCH FIRST 10 ROWS ONLY;
+                        ''', con=co)
+
+    fig6=datafr6.plot(x='artist',y='pop', kind='bar'  ,legend=False)
+    fig6.set_xticklabels(datafr6['artist'], rotation=70,fontsize=10) 
+    fig6.set_xlabel('Nom de l artiste : ')
+    fig6.set_ylabel('Popularité de l artiste : ')
+    plt.show()
+
+# requête numero 7 : (classe les artistes par popularité somme)
+
+    datafr7 = pd.read_sql('''
+                            SELECT a.artist, sum(t.pop) AS sumpop
+                            FROM Artiste a, TopSpot t
+                            WHERE a.Id=t.IdArtiste
+                            GROUP BY a.artist
+                            ORDER BY sum(t.pop) DESC
+                            FETCH FIRST 10 ROWS ONLY;
+                        ''', con=co)
+
+    fig7=datafr7.plot(x='artist',y='sumpop', kind='bar', legend=False)
+    fig7.set_xticklabels(datafr7['artist'], rotation=70,fontsize=10) 
+    fig7.set_xlabel('Nom de l artiste : ')
+    fig7.set_ylabel('Somme popularité de l artiste : ')
+    plt.show()
+
+# requête numero 8 : ()
+
+    datafr8 = pd.read_sql('''
+                            
+                        ''', con=co)
+    datafr88=datafr8.transpose()
+    print(datafr88)
+    fig8=datafr88.plot(y=0 ,kind='pie',autopct='%1.0f%%')
+    plt.show()
+
+# requête numero 9 : (speechless)
+
 
 
 
