@@ -1,3 +1,4 @@
+from tkinter import W
 import pandas as pd
 import psycopg2 as psy
 import matplotlib.pyplot as plt
@@ -7,24 +8,19 @@ co = None
 
 try:
     co =  psy.connect(host='berlin',
-                      database='dbsaeafjv',
+                      database='dbviastolfi',
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
     # requête numéro 1 : (répartition des genres dans le top)
 
-    datafr = pd.read_sql('''SELECT  count(*) AS pourcentage, genre
+    datafr = pd.read_sql('''SELECT  count(*)*100/(SELECT count(m2.id) FROM musique m2) AS pourcentage, genre
                             FROM Musique
-                            GROUP BY (genre);
+                            GROUP BY genre;
                             ''', con=co)
 
-    fig=datafr.plot(x='genre',y='pourcentage', legend=False)
-    fig.set_xticks(datafr.index)
-    fig.set_xticklabels(datafr['genre'], rotation=90, fontsize=7)
-    fig.set_xlabel('Genre')
+    fig=datafr.plot(y='pourcentage',kind='pie', legend=False)
     fig.set_ylabel('Pourcentage dans le top 50')
-    fig.set_xlim(0,50)
-    fig.set_ylim(0,350)
     plt.show()
 
     # requête numéro 2 : (quels genre a le plus de dancabilité)
