@@ -27,23 +27,6 @@ try:
     fig.set_xlim(0,50)
     plt.show()
 
-    # requête numéro 2 : (quels genre a le plus de dancabilité)
-
-    datafr2 = pd.read_sql('''
-                        SELECT DISTINCT genre, sum(danse) AS sumdnce
-                        FROM Musique
-                        GROUP BY genre
-                        ORDER BY sum(danse) DESC
-                        FETCH FIRST 5 ROWS ONLY;
-                        ''', con=co)
-
-    fig2=datafr2.plot(x='genre',y='sumdnce', legend=False)
-    fig2.set_xticks(datafr2.index)
-    fig2.set_xticklabels(datafr2['genre'], rotation=0, fontsize=10)
-    fig2.set_xlabel('Genre')
-    fig2.set_ylabel('Somme dansabilté')
-    plt.show()
-
     # requête numero 3 : (top des artistes qui font de la pop dance)
 
     datafr3 = pd.read_sql('''
@@ -160,20 +143,6 @@ try:
     fig9.set_xticklabels(datafr9['annee'], rotation=0,fontsize=10) 
     fig9.set_xlabel('Années : ')
     fig9.set_ylabel('Niveau de texte moyen des musiques:(sur 50)')
-    plt.show()
-
-    # requetes numero 10 : prendre le son le plus populaire et le comparer avec la moeynne
-
-    datafr11 = pd.read_sql('''
-                           SELECT (sum(m1.danse)/count(m1.danse))  as danse, (sum(m2.danse)/count(m2.danse)) as moydanse
-                           FROM Musique m1, Musique m2, TopSpot t
-                           WHERE m1.id=t.idmusique AND t.popularite >= ALL (SELECT t.popularite FROM Musique m, TopSpot t WHERE m.id=t.idmusique);
-                        ''', con=co)
-
-    fig11=datafr11.plot(x='danse',y='moydanse', kind='bar', legend=False)
-    fig11.set_xticklabels(datafr11['danse'], rotation=0,fontsize=10) 
-    fig11.set_xlabel('Titre : ')
-    fig11.set_ylabel('Statisitques :')
     plt.show()
 
     # requête numero 11 : (repartition des 4 styles les plus populaire en fonction de leur capacité a etre fait en live)
