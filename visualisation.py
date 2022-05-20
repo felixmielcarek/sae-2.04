@@ -7,7 +7,7 @@ co = None
 
 try:
     co =  psy.connect(host='berlin',
-                      database='dbsaeafjv',
+                      database='dbafjv',
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
@@ -190,7 +190,7 @@ try:
     fig10.set_ylabel('')
     plt.show()
 
-    # requête numero 12 : 
+    # requête numero 12 : le nombre d'apparition dans le top des genres ayant la moyenne de bpm le plus haut
 
     datafr12 = pd.read_sql('''
                             SELECT m1.genre AS genre,(
@@ -208,6 +208,25 @@ try:
     fig12.set_xticklabels(datafr12['genre'],rotation='10')
     fig12.set_ylabel('')
     fig12.set_ylim(0,603)
+    plt.show()
+
+    # requête numero 13 : moyenne de dansabilité des 5 genres les plus ecoutés
+
+
+    datafr13 = pd.read_sql('''
+                            SELECT m1.genre AS genre,(
+                                SELECT avg(m2.danse)
+                                FROM musique m2
+                                WHERE m2.genre=m1.genre
+                                ) AS dansant
+                            FROM musique m1
+                            GROUP BY m1.genre
+                            ORDER BY count(m1.id) DESC
+                            FETCH FIRST 5 ROWS ONLY;
+                        ''', con=co)
+    print(datafr13)
+    fig13=datafr13.plot(x='genre',y='dansant',style='o--r')
+    fig13.set_ylim(0,100)
     plt.show()
 
 except (Exception, psy.DatabaseError) as error:
