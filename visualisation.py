@@ -7,11 +7,11 @@ co = None
 
 try:
     co =  psy.connect(host='berlin',
-                      database='db',
+                      database='dbsaeafjv',
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
-# requête numéro 1 : (répartition des genres dans le top)
+    # requête numéro 1 : (répartition des genres dans le top)
 
     datafr = pd.read_sql('''SELECT  count(*) AS pourcentage, genre
                             FROM Musique
@@ -27,7 +27,7 @@ try:
     fig.set_ylim(0,350)
     plt.show()
 
-# requête numéro 2 : (quels genre a le plus de dancabilité)
+    # requête numéro 2 : (quels genre a le plus de dancabilité)
 
     datafr2 = pd.read_sql('''
                         SELECT DISTINCT genre, sum(danse) AS sumdnce
@@ -44,7 +44,7 @@ try:
     fig2.set_ylabel('Somme dansabilté')
     plt.show()
 
-# requête numero 3 : (top des artistes qui font de la pop dance)
+    # requête numero 3 : (top des artistes qui font de la pop dance)
 
     datafr3 = pd.read_sql('''
                             SELECT a.nom, count(*) AS nbtop 
@@ -62,7 +62,7 @@ try:
     fig3.set_ylabel('Nombre de fois dans le top spotify (genre = pop dance):')
     plt.show()
 
-# requête numero 5 : (moyenne temps de musique par année)
+    # requête numero 5 : (moyenne temps de musique par année)
 
     datafr5 = pd.read_sql('''
                             SELECT t.annee, ((sum(m.duree)/count(m.*))/60) AS tmpmoy
@@ -78,7 +78,7 @@ try:
     fig5.set_ylabel('Temps moyen des musiques:(en min)')
     plt.show()
 
-# requête numero 6 : (classe les artistes par popularité meilleur)
+    # requête numero 6 : (classe les artistes par popularité meilleur)
 
     datafr6 = pd.read_sql('''
                             SELECT a.nom, t.popularite
@@ -95,7 +95,7 @@ try:
     fig6.set_ylabel('Popularité de l artiste : ')
     plt.show()
 
-# requête numero 7 : (classe les artistes par popularité somme)
+    # requête numero 7 : (classe les artistes par popularité somme)
 
     datafr7 = pd.read_sql('''
                             SELECT a.nom, sum(t.popularite) AS sumpop
@@ -112,7 +112,7 @@ try:
     fig7.set_ylabel('Somme popularité de l artiste : ')
     plt.show()
 
-# requete numero 7.5 : (regarde le nombre de fois qu'apparaissent le 2 plus populaire du top, pour voir si quantité est gage de qualité)
+    # requete numero 7.5 : (regarde le nombre de fois qu'apparaissent le 2 plus populaire du top, pour voir si quantité est gage de qualité)
 
     datafr75 = pd.read_sql('''
                             SELECT a.nom, count(*) AS nbtotalapp
@@ -129,7 +129,7 @@ try:
     fig75.set_ylabel('Nombre d apparition de l artiste dans le top : ')
     plt.show()
 
-# requête numero 8 : (genre en fonction de leur bpm)
+    # requête numero 8 : (genre en fonction de leur bpm)
 
     datafr8 = pd.read_sql('''
                             SELECT DISTINCT genre, sum(bpm)/count(bpm) AS moybpm
@@ -146,7 +146,7 @@ try:
     fig8.set_ylabel('Moyenne bpm : ')
     plt.show()
 
-# requête numero 9 : (texte dans les musiques par années)
+    # requête numero 9 : (texte dans les musiques par années)
 
     datafr9 = pd.read_sql('''
                             SELECT t.annee, (sum(m.texte)/count(m.texte)) AS txtmoy
@@ -162,7 +162,7 @@ try:
     fig9.set_ylabel('Niveau de texte moyen des musiques:(sur 50)')
     plt.show()
 
-# requetes numero 10 : prendre le son le plus populaire et le comparer avec la moeynne
+    # requetes numero 10 : prendre le son le plus populaire et le comparer avec la moeynne
 
     datafr11 = pd.read_sql('''
                            SELECT (sum(m1.danse)/count(m1.danse))  as danse, (sum(m2.danse)/count(m2.danse)) as moydanse
@@ -176,7 +176,7 @@ try:
     fig11.set_ylabel('Statisitques :')
     plt.show()
 
-# requête numero 11 : (repartition des 4 styles les plus populaire en fonction de leur capacité a etre fait en live)
+    # requête numero 11 : (repartition des 4 styles les plus populaire en fonction de leur capacité a etre fait en live)
 
     datafr10 = pd.read_sql('''
                             SELECT sum(m1.live)/count(m1.live) as livedancepop, sum(m2.live)/count(m2.live) AS livepop, sum(m3.live)/count(m3.live) AS livecanadianpop, sum(m4.live)/count(m4.live) as liveboyband
@@ -188,6 +188,26 @@ try:
     fig10=datafr10.plot(y=0 ,kind='pie',autopct='%1.0f%%')
     fig10.legend(['livedancepop','livePop','liveCanadaPop','liveBoyBand'])
     fig10.set_ylabel('')
+    plt.show()
+
+    # requête numero 12 : 
+
+    datafr12 = pd.read_sql('''
+                            SELECT m1.genre AS genre,(
+                                SELECT COUNT(m2.ID)
+                                FROM musique m2
+                                WHERE m1.genre = m2.genre
+                                ) AS nbApparition
+                            FROM musique m1
+                            GROUP BY m1.genre
+                            ORDER BY avg(m1.bpm) DESC
+                            FETCH FIRST 5 ROWS ONLY;
+                        ''', con=co)
+    print(datafr12)
+    fig12=datafr12.plot(x='genre',y='nbapparition' ,kind='bar')
+    fig12.set_xticklabels(datafr12['genre'],rotation='10')
+    fig12.set_ylabel('')
+    fig12.set_ylim(0,603)
     plt.show()
 
 except (Exception, psy.DatabaseError) as error:

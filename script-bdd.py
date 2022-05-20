@@ -23,7 +23,7 @@ try:
     # Connecte à la base
     co=psy.connect(
         host='berlin',
-        database='db',
+        database='dbsaeafjv',
         user=gp.getuser(),
         password=gp.getpass('Password: ')
     )
@@ -74,7 +74,6 @@ try:
             PRIMARY KEY (idArtiste, idMusique, annee, popularite)
         );'''
     )
-    #a completer
 
     # Insertion des valeurs
     A = 'A00'
@@ -126,19 +125,9 @@ try:
             (idArt, idMus, row.year, row.pop)
         )
         k += 1
-    
-    #a completer
 
     curs.execute('''GRANT SELECT, INSERT, UPDATE, DELETE ON topspot TO PUBLIC''')
 
-    # Commandes pour les questions de la SAE
-    # test=pd.read_sql('''
-    #     select
-    #     from topspot
-    #     where'
-    #     ''',con=co
-    # )
-    #a completer
     curs.execute('''SELECT count(*) FROM Artiste''')
     res=curs.fetchall()
     print(res)
