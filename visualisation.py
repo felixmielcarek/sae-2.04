@@ -7,7 +7,7 @@ co = None
 
 try:
     co =  psy.connect(host='berlin',
-                      database='dbsaeafjv',
+                      database='dbviastolfi',
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
@@ -170,8 +170,8 @@ try:
                            WHERE m1.id=t.idmusique AND t.popularite >= ALL (SELECT t.popularite FROM Musique m, TopSpot t WHERE m.id=t.idmusique);
                         ''', con=co)
 
-    fig11=datafr11.plot(x='titre',y='moydanse', kind='bar', legend=False)
-    fig11.set_xticklabels(datafr11['titre'], rotation=0,fontsize=10) 
+    fig11=datafr11.plot(x='danse',y='moydanse', kind='bar', legend=False)
+    fig11.set_xticklabels(datafr11['danse'], rotation=0,fontsize=10) 
     fig11.set_xlabel('Titre : ')
     fig11.set_ylabel('Statisitques :')
     plt.show()
@@ -183,11 +183,11 @@ try:
                             FROM Musique m1, Musique m2, Musique m3, Musique m4
                             WHERE m1.genre='dance pop' AND m2.genre='pop' AND m3.genre='canadian pop' AND m4.genre='boy band';
                         ''', con=co)
-    datafr100=datafr10.transpose()
-    print(datafr100)
-    fig10=datafr100.plot(y=0 ,kind='pie',autopct='%1.0f%%')
-    fig.legend(['livedancepop','livePop','liveCanadaPop','liveBoyBand'])
-    fig.set_ylabel('')
+    datafr10=datafr10.transpose()
+    print(datafr10)
+    fig10=datafr10.plot(y=0 ,kind='pie',autopct='%1.0f%%')
+    fig10.legend(['livedancepop','livePop','liveCanadaPop','liveBoyBand'])
+    fig10.set_ylabel('')
     plt.show()
 
 except (Exception, psy.DatabaseError) as error:

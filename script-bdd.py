@@ -23,7 +23,7 @@ try:
     # Connecte à la base
     co=psy.connect(
         host='berlin',
-        database='dbsaeafjv',
+        database='dbviastolfi',
         user=gp.getuser(),
         password=gp.getpass('Password: ')
     )
