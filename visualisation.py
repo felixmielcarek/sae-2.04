@@ -190,11 +190,13 @@ try:
                                 ) AS dansant
                             FROM musique m1
                             GROUP BY m1.genre
-                            ORDER BY count(m1.id) DESC
-                            FETCH FIRST 5 ROWS ONLY;
+                            ORDER BY dansant DESC;
                         ''', con=co)
     print(datafr13)
     fig13=datafr13.plot(x='genre',y='dansant',style='o--r')
+    fig13.set_xticks(datafr13.index)
+    fig13.set_xticklabels(datafr13['genre'], rotation=90)
+    fig13.set_xlim(0,50)
     fig13.set_ylim(0,100)
     plt.show()
 
