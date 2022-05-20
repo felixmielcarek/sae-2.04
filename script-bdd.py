@@ -65,7 +65,6 @@ try:
         );'''
     )
 
-
     curs.execute('''
         CREATE TABLE TopSpot(
             IdArtiste char(4) REFERENCES artiste(id),

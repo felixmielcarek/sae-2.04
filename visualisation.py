@@ -11,7 +11,7 @@ try:
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
-# requête numéro 1 : (pourcentage dans les top selon le genre)
+# requête numéro 1 : (répartition des genres dans le top)
 
     datafr = pd.read_sql('''SELECT  count(*) AS pourcentage, genre
                             FROM Musique
@@ -27,7 +27,7 @@ try:
     fig.set_ylim(0,350)
     plt.show()
 
-# requête numéro 2 : (quels genre a le plus de dancabilité - pop dance ?)
+# requête numéro 2 : (quels genre a le plus de dancabilité)
 
     datafr2 = pd.read_sql('''
                         SELECT DISTINCT genre, sum(danse) AS sumdnce
@@ -60,24 +60,6 @@ try:
     fig3.set_xticklabels(datafr3['nom'], fontsize=10)
     fig3.set_xlabel('Artiste : ')
     fig3.set_ylabel('Nombre de fois dans le top spotify (genre = pop dance):')
-    plt.show()
-
-# requête numero 4 : (sert a rien mais on c jamais mgl)
-
-    datafr4 = pd.read_sql('''
-                        SELECT a.nom, count(*) AS nbart 
-                        FROM Musique m, Artiste a, TopSpot t
-                        WHERE a.Id=t.IdArtiste AND m.Id=t.IdMusique
-                        GROUP BY a.nom
-                        ORDER BY count(*) DESC
-                        FETCH FIRST 5 ROWS ONLY;
-                        ''', con=co)
-
-    fig4=datafr4.plot(x='nom',y='nbart', legend=False)
-    fig4.set_xticks(datafr4.index)
-    fig4.set_xticklabels(datafr4['nom'], fontsize=10)
-    fig4.set_xlabel('Artiste : ')
-    fig4.set_ylabel('Nombre de fois dans le top spotify (tout les genres):')
     plt.show()
 
 # requête numero 5 : (moyenne temps de musique par année)
@@ -130,19 +112,39 @@ try:
     fig7.set_ylabel('Somme popularité de l artiste : ')
     plt.show()
 
-# requête numero 8 : (prochainement)
+# requete numero 7.5 : (regarde le nombre de fois qu'apparaissent le 2 plus populaire du top, pour voir si quantité est gage de qualité)
 
-    """datafr8 = pd.read_sql('''
-                            SELECT a.nom, count(m.*) AS nbMusPopDance
-                            FROM Artiste a, TopSpot t, Musique m
-                            WHERE a.Id=t.IdArtiste AND m.Id=t.IdMusique AND m.genre='dance pop'
+    datafr75 = pd.read_sql('''
+                            SELECT a.nom, count(*) AS nbtotalapp
+                            FROM Artiste a, TopSpot t
+                            WHERE a.Id=t.IdArtiste
                             GROUP BY a.nom
-                            ORDER BY count(m.*)
+                            ORDER BY sum(t.popularite) DESC
+                            FETCH FIRST 2 ROWS ONLY;
                         ''', con=co)
-    datafr88=datafr8.transpose()
-    print(datafr88)
-    fig8=datafr88.plot(y=0 ,kind='pie',autopct='%1.0f%%')
-    plt.show()"""
+
+    fig75=datafr75.plot(x='nom',y='nbtotalapp', kind='bar', legend=False)
+    fig75.set_xticklabels(datafr75['nom'], rotation=70,fontsize=10) 
+    fig75.set_xlabel('Nom de l artiste : ')
+    fig75.set_ylabel('Nombre d apparition de l artiste dans le top : ')
+    plt.show()
+
+# requête numero 8 : (genre en fonction de leur bpm)
+
+    datafr8 = pd.read_sql('''
+                            SELECT DISTINCT genre, sum(bpm)/count(bpm) AS moybpm
+                            FROM Musique
+                            GROUP BY genre
+                            ORDER BY sum(bpm)/count(bpm) DESC
+                            FETCH FIRST 5 ROWS ONLY;
+                        ''', con=co)
+
+    fig8=datafr8.plot(x='genre',y='moybpm', legend=False)
+    fig8.set_xticks(datafr8.index)
+    fig8.set_xticklabels(datafr8['genre'], fontsize=10)
+    fig8.set_xlabel('Genre : ')
+    fig8.set_ylabel('Moyenne bpm : ')
+    plt.show()
 
 # requête numero 9 : (texte dans les musiques par années)
 
@@ -160,18 +162,31 @@ try:
     fig9.set_ylabel('Niveau de texte moyen des musiques:(sur 50)')
     plt.show()
 
+# requetes numero 10 : prendre le son le plus populaire et le comparer avec la moeynne
 
-# requête numero 10 : (repartition des 5 styles les plus populaire en fonction de leur capacité a etre fait en live)
+    datafr11 = pd.read_sql('''
+                           SELECT (sum(m1.danse)/count(m1.danse))  as danse, (sum(m2.danse)/count(m2.danse)) as moydanse
+                           FROM Musique m1, Musique m2, TopSpot t
+                           WHERE m1.id=t.idmusique AND t.popularite >= ALL (SELECT t.popularite FROM Musique m, TopSpot t WHERE m.id=t.idmusique);
+                        ''', con=co)
+
+    fig11=datafr11.plot(x='titre',y='moydanse', kind='bar', legend=False)
+    fig11.set_xticklabels(datafr11['titre'], rotation=0,fontsize=10) 
+    fig11.set_xlabel('Titre : ')
+    fig11.set_ylabel('Statisitques :')
+    plt.show()
+
+# requête numero 11 : (repartition des 4 styles les plus populaire en fonction de leur capacité a etre fait en live)
 
     datafr10 = pd.read_sql('''
-                            SELECT sum(m1.live)/count(m1.live) as livedancepop, sum(m2.live)/count(m2.live) AS livepop, sum(m3.live)/count(m3.live) AS livecanadianpop, sum(m4.live)/count(m4.live) as liveboyband, sum(m5.live)/count(m5.live) as livebarbadianpop
-                            FROM Musique m1, Musique m2, Musique m3, Musique m4, Musique m5
-                            WHERE m1.genre='dance pop' AND m2.genre='pop' AND m3.genre='canadian pop' AND m4.genre='boy band' AND m5.genre='barbadian pop';
+                            SELECT sum(m1.live)/count(m1.live) as livedancepop, sum(m2.live)/count(m2.live) AS livepop, sum(m3.live)/count(m3.live) AS livecanadianpop, sum(m4.live)/count(m4.live) as liveboyband
+                            FROM Musique m1, Musique m2, Musique m3, Musique m4
+                            WHERE m1.genre='dance pop' AND m2.genre='pop' AND m3.genre='canadian pop' AND m4.genre='boy band';
                         ''', con=co)
     datafr100=datafr10.transpose()
     print(datafr100)
     fig10=datafr100.plot(y=0 ,kind='pie',autopct='%1.0f%%')
-    fig.legend(['livedancepop','livePop','liveCanadaPop','liveBoyBand','liveBarbadianPop'])
+    fig.legend(['livedancepop','livePop','liveCanadaPop','liveBoyBand'])
     fig.set_ylabel('')
     plt.show()
 
