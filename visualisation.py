@@ -8,7 +8,7 @@ co = None
 
 try:
     co =  psy.connect(host='berlin',
-                      database='dbsaeafjv',
+                      database='dbviastolfi',
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
@@ -145,7 +145,7 @@ try:
     fig9.set_ylabel('Niveau de texte moyen des musiques:(sur 50)')
     plt.show()
 
-    # requête numero 11 : (repartition des 4 styles les plus populaire en fonction de leur capacité a etre fait en live)
+    # requête numero 11 : repartition des lives dans les 4 genres les plus présents
 
     datafr10 = pd.read_sql('''
                             SELECT sum(m1.live)/count(m1.live) as livedancepop, sum(m2.live)/count(m2.live) AS livepop, sum(m3.live)/count(m3.live) AS livecanadianpop, sum(m4.live)/count(m4.live) as liveboyband
