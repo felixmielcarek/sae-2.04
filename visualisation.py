@@ -8,7 +8,7 @@ co = None
 
 try:
     co =  psy.connect(host='berlin',
-                      database='dbafjv',
+                      database='dbviastolfi',
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
@@ -19,8 +19,12 @@ try:
                             GROUP BY genre;
                             ''', con=co)
 
-    fig=datafr.plot(y='pourcentage',kind='pie', legend=False)
+    fig=datafr.plot(y='pourcentage', x='genre', legend=False)
     fig.set_ylabel('Pourcentage dans le top 50')
+    fig.set_xticks(datafr.index)
+    fig.set_xticklabels(datafr['genre'], rotation=90)
+    fig.set_ylim(0,60)
+    fig.set_xlim(0,50)
     plt.show()
 
     # requête numéro 2 : (quels genre a le plus de dancabilité)
