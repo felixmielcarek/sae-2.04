@@ -8,7 +8,7 @@ co = None
 
 try:
     co =  psy.connect(host='berlin',
-                      database='dbafjv',
+                      database='dbsaeafjv',
                       user=gp.getuser(),
                       password=gp.getpass('Password: '))
     
@@ -208,7 +208,6 @@ try:
 
     # requête numero 13 : moyenne de dansabilité des 5 genres les plus ecoutés
 
-
     datafr13 = pd.read_sql('''
                             SELECT m1.genre AS genre,(
                                 SELECT avg(m2.danse)
@@ -224,6 +223,18 @@ try:
     fig13=datafr13.plot(x='genre',y='dansant',style='o--r')
     fig13.set_ylim(0,100)
     plt.show()
+
+    # requête numero 14 : comparaison de l'energie avec les décibels
+
+    datafr14 = pd.read_sql('''
+                            SELECT db,energie
+                            FROM musique
+                            ORDER BY db;
+                        ''', con=co)
+    print(datafr14)
+    fig14=datafr14.plot(y=['db','energie'],style=['.--r','.--b'])
+    plt.show()
+
 
 except (Exception, psy.DatabaseError) as error:
     print(error)
